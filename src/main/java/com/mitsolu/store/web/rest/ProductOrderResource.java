@@ -152,6 +152,7 @@ public class ProductOrderResource {
     ) {
         log.debug("REST request to get a page of ProductOrders");
         Page<ProductOrder> page;
+        eagerload = false;//TODO
         if (eagerload) {
             page = productOrderService.findAllWithEagerRelationships(pageable);
         } else {

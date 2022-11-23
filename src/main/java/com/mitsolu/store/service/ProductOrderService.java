@@ -2,6 +2,9 @@ package com.mitsolu.store.service;
 
 import com.mitsolu.store.domain.ProductOrder;
 import com.mitsolu.store.repository.ProductOrderRepository;
+import com.mitsolu.store.security.AuthoritiesConstants;
+import com.mitsolu.store.security.SecurityUtils;
+
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +86,13 @@ public class ProductOrderService {
     @Transactional(readOnly = true)
     public Page<ProductOrder> findAll(Pageable pageable) {
         log.debug("Request to get all ProductOrders");
-        return productOrderRepository.findAll(pageable);
+        if (SecurityUtils.hasCurrentUserThisAuthority(AuthoritiesConstants.ADMIN)) {
+        	return productOrderRepository.findAll(pageable);
+        } else {
+        	String userLogin = SecurityUtils.getCurrentUserLogin().get();
+        	return productOrderRepository.findAllByCustomerUserLogin(userLogin, pageable);
+    	}
+        // return productOrderRepository.findAll(pageable);
     }
 
     /**
@@ -104,7 +113,12 @@ public class ProductOrderService {
     @Transactional(readOnly = true)
     public Optional<ProductOrder> findOne(Long id) {
         log.debug("Request to get ProductOrder : {}", id);
-        return productOrderRepository.findOneWithEagerRelationships(id);
+        // return productOrderRepository.findOneWithEagerRelationships(id);
+        if (SecurityUtils.hasCurrentUserThisAuthority(AuthoritiesConstants.ADMIN)) {
+        	return productOrderRepository.findById(id);
+        } else {
+        	return productOrderRepository.findOneByIdAndCustomerUserLogin(id, SecurityUtils.getCurrentUserLogin().get());
+        }
     }
 
     /**

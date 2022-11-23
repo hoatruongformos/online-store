@@ -37,4 +37,9 @@ public interface ShipmentRepository extends JpaRepository<Shipment, Long> {
 
     @Query("select shipment from Shipment shipment left join fetch shipment.invoice where shipment.id =:id")
     Optional<Shipment> findOneWithToOneRelationships(@Param("id") Long id);
+    
+    @Query(value = "select * from shipment s cross join invoice i cross join product_order po cross join customer c cross join jhi_user u where s.invoice_id = i.id and i.order_id = po.id and po.customer_id = c.id and c.user_id = u.id and u.login =:login", nativeQuery = true)
+    Page<Shipment> findAllByInvoiceOrderCustomerUserLogin(@Param("login") String login, Pageable pageable);
+    
+    Optional<Shipment> findOneByIdAndInvoiceOrderCustomerUserLogin(@Param("id") Long id, @Param("login") String login);
 }
