@@ -13,9 +13,6 @@ node {
         sh "chmod +x gradlew"
         sh "./gradlew clean --no-daemon"
     }
-    #!stage('nohttp') {
-    #!    sh "./gradlew checkstyleNohttp --no-daemon"
-    #!}
 
     stage('npm install') {
         sh "./gradlew npm_install -PnodeInstall --no-daemon"
